@@ -17,7 +17,7 @@ type RouterOptions struct {
 	Storage storage.StorageI
 }
 
-// @title           Swagger for blog api
+/// @title           Swagger for blog api
 // @version         1.0
 // @description     This is a blog service api.
 // @host      localhost:8000
@@ -34,9 +34,11 @@ func New(opt *RouterOptions) *gin.Engine {
 
 	apiV1.GET("/users/:id", handlerV1.GetUser)
 	apiV1.POST("/users", handlerV1.CreateUser)
+	apiV1.GET("/users", handlerV1.GetAllUsers)
 
 	apiV1.GET("/categories/:id", handlerV1.GetCategory)
 	apiV1.POST("/categories", handlerV1.CreateCategory)
+	apiV1.GET("/categories", handlerV1.GetAllCategories)
 
 	apiV1.GET("/posts/:id", handlerV1.GetPost)
 	apiV1.POST("/posts", handlerV1.CreatePost)
