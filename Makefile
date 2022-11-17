@@ -1,4 +1,4 @@
-DB_URL=postgresql://postgres:postgres@localhost:5432/blog_db?sslmode=disable
+DB_URL=postgresql://postgres:1105@localhost:5432/blog_project?sslmode=disable
 
 swag-init:
 	swag init -g api/api.go -o api/docs

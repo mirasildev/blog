@@ -4,8 +4,8 @@ import (
 	"net/http"
 	"strconv"
 
-	"github.com/TemurMannonov/blog/api/models"
-	"github.com/TemurMannonov/blog/storage/repo"
+	"github.com/mirasildev/blog/api/models"
+	"github.com/mirasildev/blog/storage/repo"
 	"github.com/gin-gonic/gin"
 )
 

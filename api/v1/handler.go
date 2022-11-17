@@ -1,8 +1,8 @@
 package v1
 
 import (
-	"github.com/TemurMannonov/blog/config"
-	"github.com/TemurMannonov/blog/storage"
+	"github.com/mirasildev/blog/config"
+	"github.com/mirasildev/blog/storage"
 )
 
 type handlerV1 struct {
