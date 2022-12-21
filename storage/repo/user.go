@@ -1,17 +1,24 @@
 package repo
 
-import "time"
+import (
+	"time"
+)
+
+const (
+	UserTypeSuperadmin = "superadmin"
+	UserTypeUser       = "user"
+)
 
 type User struct {
 	ID              int64
 	FirstName       string
 	LastName        string
-	PhoneNumber     *string
+	PhoneNumber     *string //*
 	Email           string
-	Gender          *string
+	Gender          *string //*
 	Password        string
-	Username        string
-	ProfileImageUrl *string
+	Username        *string
+	ProfileImageUrl *string // *
 	Type            string
 	CreatedAt       time.Time
 }
@@ -27,8 +34,17 @@ type GetAllUsersResult struct {
 	Count int32
 }
 
+type UpdatePassword struct {
+	UserID   int64
+	Password string
+}
+
 type UserStorageI interface {
 	Create(u *User) (*User, error)
 	Get(id int64) (*User, error)
 	GetAll(params *GetAllUsersParams) (*GetAllUsersResult, error)
+	UpdateUser(u *User) (*User, error)
+	UpdatePassword(req *UpdatePassword) error
+	DeleteUser(id int64) error
+	GetByEmail(email string) (*User, error)
 }

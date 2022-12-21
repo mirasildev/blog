@@ -1,9 +1,11 @@
 package postgres
 
 import (
+	"database/sql"
 	"fmt"
-	"github.com/mirasildev/blog/storage/repo"
+
 	"github.com/jmoiron/sqlx"
+	"github.com/mirasildev/blog/storage/repo"
 )
 
 type categoryRepo struct {
@@ -116,4 +118,46 @@ func (cr *categoryRepo) GetAll(params *repo.GetAllCategoriesParams) (*repo.GetAl
 	}
 
 	return &result, nil
+}
+
+func (cr *categoryRepo) Update(ctr *repo.Category) (*repo.Category, error) {
+	query := `
+		UPDATE categories SET title=$1 WHERE id=$2
+		RETURNING id, title, created_at
+	`
+	var result repo.Category
+	err := cr.db.QueryRow(
+		query,
+		ctr.Title,
+		ctr.ID,
+	).Scan(
+		&result.ID,
+		&result.Title,
+		&result.CreatedAt,
+	)
+	if err != nil {
+		return nil, err
+	}
+
+	return &result, nil
+}
+
+func (cr *categoryRepo) Delete(id int64) error {
+
+	query := "DELETE FROM categories WHERE id=$1"
+	result, err := cr.db.Exec(query, id)
+	if err != nil {
+		return err
+	}
+
+	rowsCount, err := result.RowsAffected()
+	if err != nil {
+		return err
+	}
+
+	if rowsCount == 0 {
+		return sql.ErrNoRows
+	}
+
+	return nil
 }

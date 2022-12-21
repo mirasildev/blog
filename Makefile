@@ -1,10 +1,11 @@
+.SILENT:
 DB_URL=postgresql://postgres:1105@localhost:5432/blog_project?sslmode=disable
 
 swag-init:
 	swag init -g api/api.go -o api/docs
 
 start:
-	go run main.go
+	go run cmd/main.go
 
 migrateup:
 	migrate -path migrations -database "$(DB_URL)" -verbose up
@@ -17,5 +18,8 @@ migratedown:
 
 migratedown1:
 	migrate -path migrations -database "$(DB_URL)" -verbose down 1
+
+local-up:
+	docker compose --env-file ./.env.docker up -d
 
 .PHONY: start migrateup migratedown

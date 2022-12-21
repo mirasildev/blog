@@ -1,9 +1,11 @@
 package postgres
 
 import (
+	"database/sql"
 	"fmt"
-	"github.com/mirasildev/blog/storage/repo"
+
 	"github.com/jmoiron/sqlx"
+	"github.com/mirasildev/blog/storage/repo"
 )
 
 type userRepo struct {
@@ -106,7 +108,7 @@ func (ur *userRepo) GetAll(params *repo.GetAllUsersParams) (*repo.GetAllUsersRes
 
 	limit := fmt.Sprintf(" LIMIT %d OFFSET %d ", params.Limit, offset)
 
-	filter := ""
+	filter := " "
 	if params.Search != "" {
 		str := "%" + params.Search + "%"
 		filter += fmt.Sprintf(`
@@ -171,4 +173,130 @@ func (ur *userRepo) GetAll(params *repo.GetAllUsersParams) (*repo.GetAllUsersRes
 	}
 
 	return &result, nil
+}
+
+func (ur *userRepo) UpdateUser(user *repo.User) (*repo.User, error) {
+	query := `
+		UPDATE users SET
+			first_name=$1,
+			last_name=$2,
+			phone_number=$3,
+			email=$4,
+			gender=$5,
+			password=$6,
+			username=$7,
+			profile_image_url=$8,
+			type=$9
+		WHERE id=$10
+		RETURNING id, first_name, last_name, phone_number, email, 
+		gender, password,username, profile_image_url, type, created_at
+	`
+	var result repo.User
+	err := ur.db.QueryRow(
+		query,
+		user.FirstName,
+		user.LastName,
+		user.PhoneNumber,
+		user.Email,
+		user.Gender,
+		user.Password,
+		user.Username,
+		user.ProfileImageUrl,
+		user.Type,
+		user.ID,
+	).Scan(
+		&result.ID,
+		&result.FirstName,
+		&result.LastName,
+		&result.PhoneNumber,
+		&result.Email,
+		&result.Gender,
+		&result.Password,
+		&result.Username,
+		&result.ProfileImageUrl,
+		&result.Type,
+		&result.CreatedAt,
+	)
+	if err != nil {
+		return nil, err
+	}
+
+	return &result, nil
+}
+
+func (ur *userRepo) DeleteUser(id int64) error {
+	queryDeletePosts := "DELETE FROM posts WHERE id=$1"
+	_, err := ur.db.Exec(queryDeletePosts, id)
+	if err != nil {
+		return err
+	}
+
+	query := "DELETE FROM users WHERE id=$1"
+	result, err := ur.db.Exec(query, id)
+	if err != nil {
+		return err
+	}
+
+	rowsCount, err := result.RowsAffected()
+	if err != nil {
+		return err
+	}
+
+	if rowsCount == 0 {
+		return sql.ErrNoRows
+	}
+
+	return nil
+}
+
+func (ur *userRepo) GetByEmail(email string) (*repo.User, error) {
+	var result repo.User
+
+	query := `
+			SELECT 
+				id,
+				first_name,
+				last_name,
+				phone_number,
+				email,
+				gender,
+				password,
+				username,
+				profile_image_url,
+				type,
+				created_at
+			FROM users
+			WHERE email=$1
+	`
+
+	row := ur.db.QueryRow(query, email)
+	err := row.Scan(
+		&result.ID,
+		&result.FirstName,
+		&result.LastName,
+		&result.PhoneNumber,
+		&result.Email,
+		&result.Gender,
+		&result.Password,
+		&result.Username,
+		&result.ProfileImageUrl,
+		&result.Type,
+		&result.CreatedAt,
+	)
+	if err != nil {
+		return nil, err
+	}
+
+	return &result, nil
+}
+
+func (ur *userRepo) UpdatePassword(req *repo.UpdatePassword) error {
+	query := `UPDATE users SET password=$1 WHERE id=$2`
+
+	_, err := ur.db.Exec(query, req.Password, req.UserID)
+	if err != nil {
+		return err
+	}
+
+	return nil
 }
