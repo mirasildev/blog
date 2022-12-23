@@ -8,6 +8,6 @@ type Like struct {
 }
 
 type CreateLikeRequest struct {
-	PostID int64 `json:"post_id" binding:"required"'`
+	PostID int64 `json:"post_id" binding:"required"`
 	Status bool  `json:"status" binding:"required"`
 }

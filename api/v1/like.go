@@ -35,7 +35,7 @@ func (h *handlerV1) CreateLike(c *gin.Context) {
 		return
 	}
 
-	resp, err := h.storage.Like().Create(&repo.Like{
+	err = h.storage.Like().CreateOrUpdate(&repo.Like{
 		UserID: payload.UserID,
 		PostID: req.PostID,
 		Status: req.Status,
@@ -45,11 +45,8 @@ func (h *handlerV1) CreateLike(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusCreated, models.Like{
-		ID:     resp.ID,
-		PostID: resp.PostID,
-		UserID: resp.UserID,
-		Status: resp.Status,
+	c.JSON(http.StatusCreated, models.ResponseOK{
+		Message: "Success",
 	})
 }
 
