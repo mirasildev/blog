@@ -5,7 +5,7 @@ import (
 	v1 "github.com/mirasildev/blog/api/v1"
 	"github.com/mirasildev/blog/config"
 	"github.com/mirasildev/blog/storage"
-	// "github.com/gin-contrib/cors"
+	"github.com/gin-contrib/cors"
 
 	swaggerFiles "github.com/swaggo/files"     // swagger embed files
 	ginSwagger "github.com/swaggo/gin-swagger" // gin-swagger middleware
