@@ -5,6 +5,7 @@ import (
 	v1 "github.com/mirasildev/blog/api/v1"
 	"github.com/mirasildev/blog/config"
 	"github.com/mirasildev/blog/storage"
+	"github.com/gin-contrib/cors"
 
 	swaggerFiles "github.com/swaggo/files"     // swagger embed files
 	ginSwagger "github.com/swaggo/gin-swagger" // gin-swagger middleware
@@ -28,6 +29,12 @@ type RouterOptions struct {
 // @Security ApiKeyAuth
 func New(opt *RouterOptions) *gin.Engine {
 	router := gin.Default()
+
+	corsConfig := cors.DefaultConfig()
+	corsConfig.AllowAllOrigins = true
+	corsConfig.AllowCredentials = true
+	corsConfig.AllowHeaders = append(corsConfig.AllowHeaders, "*")
+	router.Use(cors.New(corsConfig))
 
 	handlerV1 := v1.New(&v1.HandlerV1Options{
 		Cfg:      opt.Cfg,
